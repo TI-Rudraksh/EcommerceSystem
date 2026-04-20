@@ -17,8 +17,11 @@ public class DatabaseSeeder
 
     public async Task SeedAllAsync()
     {
+        Console.WriteLine("DatabaseSeeder started");
+
         foreach (var seeder in _seeders.OrderBy(s => s.Order))
         {
+            Console.WriteLine($"Running {seeder.GetType().Name}");
             await seeder.SeedAsync(_context);
         }
     }

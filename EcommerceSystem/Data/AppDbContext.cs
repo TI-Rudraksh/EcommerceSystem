@@ -45,28 +45,28 @@ public class AppDbContext : DbContext
             .HasForeignKey(c => c.ParentCategoryId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<Category>().HasData(
-            new Category
-            {
-                Id = 1,
-                Name = "Electronics",
-                ParentCategoryId = null
-            },
-
-            new Category
-            {
-                Id = 2,
-                Name = "Laptops",
-                ParentCategoryId = 1
-            },
-
-            new Category
-            {
-                Id = 3,
-                Name = "Gaming Laptops",
-                ParentCategoryId = 2
-            }
-        );
+        // modelBuilder.Entity<Category>().HasData(
+        //     new Category
+        //     {
+        //         Id = 1,
+        //         Name = "Electronics",
+        //         ParentCategoryId = null
+        //     },
+        //
+        //     new Category
+        //     {
+        //         Id = 2,
+        //         Name = "Laptops",
+        //         ParentCategoryId = 1
+        //     },
+        //
+        //     new Category
+        //     {
+        //         Id = 3,
+        //         Name = "Gaming Laptops",
+        //         ParentCategoryId = 2
+        //     }
+        // );
         
         modelBuilder.Entity<ProductTag>()
             .HasKey(pt => new { pt.ProductId, pt.TagId });

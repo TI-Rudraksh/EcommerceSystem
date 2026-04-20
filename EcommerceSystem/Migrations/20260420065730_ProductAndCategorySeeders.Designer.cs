@@ -3,6 +3,7 @@ using System;
 using EcommerceSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcommerceSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420065730_ProductAndCategorySeeders")]
+    partial class ProductAndCategorySeeders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,6 +52,28 @@ namespace EcommerceSystem.Migrations
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Electronics",
+                            Slug = ""
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Laptops",
+                            ParentCategoryId = 1,
+                            Slug = ""
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Gaming Laptops",
+                            ParentCategoryId = 2,
+                            Slug = ""
+                        });
                 });
 
             modelBuilder.Entity("EcommerceSystem.Data.Customer", b =>

@@ -186,3 +186,4 @@
 /Volumes/RudrSSD/Projects/RiderProjects/EcommerceSystem/EcommerceSystem/obj/Debug/net10.0/EcommerceSystem.pdb
 /Volumes/RudrSSD/Projects/RiderProjects/EcommerceSystem/EcommerceSystem/obj/Debug/net10.0/EcommerceSystem.genruntimeconfig.cache
 /Volumes/RudrSSD/Projects/RiderProjects/EcommerceSystem/EcommerceSystem/obj/Debug/net10.0/ref/EcommerceSystem.dll
+/Volumes/RudrSSD/Projects/RiderProjects/EcommerceSystem/EcommerceSystem/obj/Debug/net10.0/EcommerceSystem.sourcelink.json

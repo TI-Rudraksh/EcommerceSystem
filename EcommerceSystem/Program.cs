@@ -1,5 +1,6 @@
 using EcommerceSystem.Data;
 using EcommerceSystem.Seeders;
+using EcommerceSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -17,13 +18,13 @@ builder.Services.AddScoped<IDataSeeder, CategorySeeder>();
 builder.Services.AddScoped<IDataSeeder, ProductSeeder>();
 
 builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<ProductQueryService>();
+builder.Services.AddScoped<ProductService>();
 var app = builder.Build();
 
 //Env based seeding
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
-
     var seeder = scope.ServiceProvider
         .GetRequiredService<DatabaseSeeder>();
 

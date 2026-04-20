@@ -11,7 +11,8 @@ public class CategorySeeder : IDataSeeder
     {
         if (await context.Categories.AnyAsync())
             return;
-
+        Console.WriteLine("CategorySeeder running");
+        
         context.Categories.AddRange(
             new Category { Name = "Electronics", Slug = "electronics" },
             new Category { Name = "Clothing", Slug = "clothing" },
