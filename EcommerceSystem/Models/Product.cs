@@ -1,10 +1,13 @@
 using EcommerceSystem.Data;
+using EcommerceSystem.Models.Base;
 
 namespace EcommerceSystem.Models;
 
-public class Product
+public class Product : BaseEntity, ITenantEntity
 {
     public int Id { get; set; }
+
+    public string TenantId { get; set; } = "";
 
     public string Name { get; set; } = string.Empty;
     

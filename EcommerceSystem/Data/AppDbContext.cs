@@ -1,19 +1,23 @@
+using System.Linq.Expressions;
 using EcommerceSystem.Models;
+using EcommerceSystem.Models.Base;
+using EcommerceSystem.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceSystem.Data;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly string _tenantId;
+    public AppDbContext(DbContextOptions<AppDbContext> options,ITenantService tenantService) : base(options)
     {
+        _tenantId = tenantService.GetCurrentTenantId();
     }
     public DbSet<Product> Products =>  Set<Product>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
-
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,5 +86,70 @@ public class AppDbContext : DbContext
             .HasOne(pt => pt.Tag)
             .WithMany(t => t.ProductTags)
             .HasForeignKey(pt => pt.TagId);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var property = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
+                var condition = Expression.Equal(property, Expression.Constant(false));
+                var lambda = Expression.Lambda(condition, parameter);
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+            }
+        }
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(ITenantEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+
+                var tenantProperty = Expression.Property(
+                    parameter,
+                    nameof(ITenantEntity.TenantId)
+                );
+
+                var tenantCondition = Expression.Equal(
+                    tenantProperty,
+                    Expression.Constant(_tenantId)
+                );
+
+                var lambda = Expression.Lambda(tenantCondition, parameter);
+
+                modelBuilder.Entity(entityType.ClrType)
+                    .HasQueryFilter(lambda);
+            }
+        }
+    }
+    
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
+                    entry.Entity.DeletedAt = DateTime.UtcNow;
+                    break;
+                    
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    break;
+                    
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    break;
+            }
+        }
+        foreach (var entry in ChangeTracker.Entries<ITenantEntity>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.TenantId = _tenantId;
+            }
+        }
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }

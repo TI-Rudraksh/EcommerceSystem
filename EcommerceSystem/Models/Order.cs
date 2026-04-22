@@ -1,11 +1,14 @@
 using EcommerceSystem.Data;
+using EcommerceSystem.Models.Base;
 
 namespace EcommerceSystem.Models;
 
-public class Order
+public class Order : BaseEntity, ITenantEntity
 {
     public int Id { get; set; }
     public string OrderNumber { get; set; } = string.Empty;
+
+    public string TenantId { get; set; } = "";
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
     public decimal TotalAmount { get; set; }
     public string Status { get; set; } = string.Empty;

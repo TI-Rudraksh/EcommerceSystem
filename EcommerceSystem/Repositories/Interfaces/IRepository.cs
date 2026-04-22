@@ -16,6 +16,7 @@ public interface IRepository<T> where T : class
     Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec);
 
     Task<T?> FirstOrDefaultAsync(ISpecification<T> spec);
+    
 
     Task<int> CountAsync(ISpecification<T> spec);
     

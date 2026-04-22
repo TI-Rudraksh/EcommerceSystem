@@ -10,7 +10,9 @@ public static class SpecificationEvaluator<T>
         IQueryable<T> inputQuery,
         ISpecification<T> spec)
     {
-        var query = inputQuery;
+        var query = spec.IgnoreQueryFilters
+            ? inputQuery.IgnoreQueryFilters()
+            : inputQuery;
 
         if (spec.IsNoTracking)
             query = query.AsNoTracking();

@@ -27,4 +27,10 @@ public abstract class Specification<T> : ISpecification<T>
     }
     protected void AsTracking() => IsNoTracking = false;
     
+    public bool IgnoreQueryFilters { get; private set; }
+    protected void ApplyIgnoreQueryFilters()
+    {
+        IgnoreQueryFilters = true;
+    }
+    
 }

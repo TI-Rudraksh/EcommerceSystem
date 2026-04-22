@@ -3,6 +3,7 @@ using EcommerceSystem.Repositories.Implementations;
 using EcommerceSystem.Repositories.Interfaces;
 using EcommerceSystem.Seeders;
 using EcommerceSystem.Services;
+using EcommerceSystem.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContextPool<AppDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
         .LogTo(Console.WriteLine, LogLevel.Information) // development only
         .EnableDetailedErrors() // development only
@@ -25,6 +26,7 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitofWork, UnitOfWork>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<OrderService>();
 var app = builder.Build();
 

@@ -2,6 +2,7 @@ using EcommerceSystem.Models;
 using EcommerceSystem.Models.DTOs;
 using EcommerceSystem.Repositories.Interfaces;
 using EcommerceSystem.Specifications.ProductSpecs;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace EcommerceSystem.Services;
 
@@ -41,14 +42,15 @@ public class ProductService
     {
         var product =
             await _uow.Products.GetByIdAsync(id);
-
+    
         if (product == null)
             return;
-
+    
         _uow.Products.Delete(product);
-
+    
         await _uow.SaveChangesAsync();
     }
+    
     public async Task<IReadOnlyList<ProductResponseDto>> GetActiveProductsByCategoryAsync(int categoryId)
     {
         var spec =
@@ -93,5 +95,33 @@ public class ProductService
         );
 
         return await _uow.Products.ListAsync(spec);
+    }
+    
+    
+    public async Task<IReadOnlyList<Product>> GetDeletedProductsAsync()
+    {
+        var spec = new DeleteProductsSpec();
+        return await _uow.Products.ListAsync(spec);
+    }
+    
+    public async Task<Product?> RestoreProductAsync(int id)
+    {
+        var spec = new RestoreProductSpec(id);
+
+        var product =
+            await _uow.Products.FirstOrDefaultAsync(spec);
+
+        if (product == null)
+            return null;
+
+        product.IsDeleted = false;
+
+        product.DeletedAt = null;
+
+        _uow.Products.Update(product);
+
+        await _uow.SaveChangesAsync();
+
+        return product;
     }
 }

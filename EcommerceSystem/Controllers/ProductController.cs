@@ -63,7 +63,31 @@ public class ProductController : Controller
 
         return Json(new
         {
-            message = $"Product {id} deleted successfully"
+            message = $"Product {id} soft deleted successfully"
         });
     }
+    
+    //GET DELETED PRODUCTS 
+    public async Task<IActionResult> GetDeletedProducts()
+    {
+        var products = await _productService.GetDeletedProductsAsync();
+        return Json(products);
+    }
+    
+    //RESTORE SOFT DELETE PRODUCTS
+    public async Task<IActionResult> Restore(int id)
+    {
+        var product =
+            await _productService.RestoreProductAsync(id);
+
+        if (product == null)
+            return NotFound("Product not found");
+
+        return Ok("Product restored");
+    }
+    
+    
+    
+    
+    
 }

@@ -21,4 +21,6 @@ public interface ISpecification<T>
     bool IsPagingEnabled { get; }
     
     bool IsNoTracking { get; }
+    
+    bool IgnoreQueryFilters { get; }
 }
