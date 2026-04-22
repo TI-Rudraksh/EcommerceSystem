@@ -13,7 +13,7 @@ public class LoadingStrategyTestController : Controller
         _context = context;
     }
 
-    // 1️⃣ EAGER LOADING
+    // EAGER LOADING
     public async Task<IActionResult> Eager()
     {
         var products = await _context.Products
@@ -27,7 +27,7 @@ public class LoadingStrategyTestController : Controller
         }));
     }
 
-    // 2️⃣ EXPLICIT LOADING
+    // EXPLICIT LOADING
     public async Task<IActionResult> Explicit(int id = 10)
     {
         var product = await _context.Products.FindAsync(id);
@@ -46,7 +46,7 @@ public class LoadingStrategyTestController : Controller
         });
     }
 
-    // 3️⃣ PROJECTION (BEST PRACTICE)
+    //PROJECTION (BEST PRACTICE)
     public async Task<IActionResult> Projection()
     {
         var products = await _context.Products
@@ -60,19 +60,4 @@ public class LoadingStrategyTestController : Controller
 
         return Json(products);
     }
-
-    // // 4️⃣ SPLIT QUERY vs SINGLE QUERY
-    // public async Task<IActionResult> SplitQuery()
-    // {
-    //     var orders = await _context.Orders
-    //         .Include(o => o.OrderItems)
-    //         .Include(o => o.PaymentMethod)
-    //         .AsSplitQuery()
-    //         .ToListAsync();
-    //
-    //     return Json(new
-    //     {
-    //         Count = orders.Count
-    //     });
-    // }
 }

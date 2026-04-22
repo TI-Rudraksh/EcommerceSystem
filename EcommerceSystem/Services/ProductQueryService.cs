@@ -42,8 +42,7 @@ public class ProductQueryService
             .ToListAsync();
     }
     
-    public async Task<(List<Product> Items, int TotalCount)>
-        GetPagedProducts(int page, int pageSize)
+    public async Task<List<Product>> GetPagedProducts(int page, int pageSize)
     {
         var query = _context.Products
             .Where(p => p.IsActive)
@@ -56,7 +55,7 @@ public class ProductQueryService
             .Take(pageSize)
             .ToListAsync();
 
-        return (items, totalCount);
+        return items;
     }
     
     public async Task<object> GetDashboardStats()

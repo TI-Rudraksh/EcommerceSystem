@@ -1,4 +1,6 @@
 using EcommerceSystem.Data;
+using EcommerceSystem.Repositories.Implementations;
+using EcommerceSystem.Repositories.Interfaces;
 using EcommerceSystem.Seeders;
 using EcommerceSystem.Services;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +22,12 @@ builder.Services.AddScoped<IDataSeeder, ProductSeeder>();
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<ProductQueryService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitofWork, UnitOfWork>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<OrderService>();
 var app = builder.Build();
 
-//Env based seeding
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider

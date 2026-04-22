@@ -5,16 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 public class ProductTestController : Controller
 {
     private readonly ProductQueryService _service;
+    private readonly ProductService _service2;
 
-    public ProductTestController(ProductQueryService service)
+    public ProductTestController(ProductQueryService service, ProductService service2)
     {
         _service = service;
+        _service2 = service2;
     }
 
     public async Task<IActionResult> Search()
     {
         var products = await _service.SearchProducts(
-            name: "Mouse",
+            name: "Keyboard",
             minPrice: 10,
             maxPrice: 5000
         );
@@ -51,4 +53,17 @@ public class ProductTestController : Controller
             message = "15% discount applied successfully"
         });
     }
+    
+    //Using Specifications 
+    public async Task<IActionResult> ActiveProducts(int categoryId)
+    {
+        var products = await _service2.GetActiveProductsByCategoryAsync(categoryId);
+        return Json(products);
+    }
+
+    // public async Task<IActionResult> GetProductsBySku(string sku)
+    // {
+    //     var products = await _service2.GetBySkuAsync(sku);
+    //     return Json(products);
+    // }
 }

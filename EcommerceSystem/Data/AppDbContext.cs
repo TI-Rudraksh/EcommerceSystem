@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Customer -> Orders (1:M)
@@ -26,10 +27,9 @@ public class AppDbContext : DbContext
 
         // Order -> OrderItems (1:M)
         modelBuilder.Entity<Order>()
-            .HasMany(o => o.OrderItems)
-            .WithOne(oi => oi.Order)
-            .HasForeignKey(oi => oi.OrderId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasOne(o => o.Customer)
+            .WithMany(c => c.Orders)
+            .HasForeignKey(o => o.CustomerId);
 
 
         // OrderItem -> Product (M:1)

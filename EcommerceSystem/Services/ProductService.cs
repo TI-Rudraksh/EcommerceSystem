@@ -1,46 +1,97 @@
-using EcommerceSystem.Data;
 using EcommerceSystem.Models;
-using Microsoft.EntityFrameworkCore;
+using EcommerceSystem.Models.DTOs;
+using EcommerceSystem.Repositories.Interfaces;
+using EcommerceSystem.Specifications.ProductSpecs;
 
 namespace EcommerceSystem.Services;
 
 public class ProductService
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitofWork _uow;
 
-    public ProductService(AppDbContext context)
+    public ProductService(IUnitofWork uow)
     {
-        _context = context;
+        _uow = uow;
     }
 
     public async Task<Product?> GetByIdAsync(int id)
-    {
-        return await _context.Products.FindAsync(id);
-    }
+        => await _uow.Products.GetByIdAsync(id);
 
-    public async Task CreateAsync(Product product)
+    public async Task<Product> CreateAsync(Product product)
     {
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
-    }
+        await _uow.Products.AddAsync(product);
 
+        await _uow.SaveChangesAsync();
+
+        return product;
+    }
+    
     public async Task UpdatePriceAsync(int id, decimal price)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _uow.Products.GetByIdAsync(id);
 
         if (product == null) return;
 
         product.Price = price;
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        _context.Products.Remove(new Product { Id = id });
+        var product =
+            await _uow.Products.GetByIdAsync(id);
 
-        await _context.SaveChangesAsync();
+        if (product == null)
+            return;
+
+        _uow.Products.Delete(product);
+
+        await _uow.SaveChangesAsync();
     }
-    
+    public async Task<IReadOnlyList<ProductResponseDto>> GetActiveProductsByCategoryAsync(int categoryId)
+    {
+        var spec =
+            new ActiveProductsByCategorySpec(categoryId);
 
+        var products =  await _uow.Products.ListAsync(spec);
+        return products.Select(p => new ProductResponseDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Price = p.Price,
+            CategoryName = p.Category.Name
+        }).ToList();
+    }
+    public async Task<Product?> GetBySkuAsync(string sku)
+    {
+        var spec = new ProductBySkuSpec(sku);
+
+        return await _uow.Products.FirstOrDefaultAsync(spec);
+    }
+    public async Task<IReadOnlyList<Product>> GetTopSellingProductsAsync(int count)
+    {
+        var spec = new TopExpensiveProductsSpec(count);
+
+        return await _uow.Products.ListAsync(spec);
+    }
+    public async Task<IReadOnlyList<Product>> SearchProductsAsync(
+        string? term,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? categoryId,
+        int page,
+        int pageSize)
+    {
+        var spec = new ProductSearchSpec(
+            term,
+            minPrice,
+            maxPrice,
+            categoryId,
+            page,
+            pageSize
+        );
+
+        return await _uow.Products.ListAsync(spec);
+    }
 }
